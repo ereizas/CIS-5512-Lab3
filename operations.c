@@ -33,7 +33,7 @@ int redirec_input(char *file)
 int redirec_output(char *file)
 {
     int fd;
-    if((fd=open(file,O_WRONLY|O_CREAT|O_TRUNC))==-1)
+    if((fd=open(file,O_WRONLY|O_CREAT|O_TRUNC, 0644))==-1)
     {
         perror("open");
         return -1;
