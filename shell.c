@@ -6,7 +6,6 @@ This is the main file in which the shell will be ran.
 #include <stdlib.h>
 #include <string.h>
 #include "helpers.h"
-#include "built_ins.h"
 #include "non_built_in_parsing.h"
 #include "operations.h"
 int main(int argc, char *argv[])
@@ -14,7 +13,7 @@ int main(int argc, char *argv[])
     while(1)
     {
         printf("%s", "<My_Shell>:");
-        pwd(1);
+        
         printf("%c",'$');
         char *line; size_t len;
         if((line=malloc(LINE_MAX))==NULL)
@@ -92,7 +91,7 @@ int main(int argc, char *argv[])
                                 {
                                     output_file=*(shell_args+find_special(shell_args,"<")+1);
                                 }
-                                execute(input_file,output_file,exec_name, cmd, bckgrnd, 1);
+                                execute(input_file,output_file,exec_name, cmd, bckgrnd);
                             }
                             else
                             {

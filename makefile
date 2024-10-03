@@ -1,5 +1,5 @@
-shell: helpers.o built_ins.o non_built_in_parsing.o operations.o
-	gcc -o shell shell.c helpers.o built_ins.o non_built_in_parsing.o operations.o -Wall -Werror
+shell: helpers.o  non_built_in_parsing.o operations.o
+	gcc -o shell shell.c helpers.o non_built_in_parsing.o operations.o -Wall -Werror
 helpers.o: helpers.c
 	gcc -c helpers.c
 non_built_in_parsing.o: non_built_in_parsing.c
