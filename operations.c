@@ -29,6 +29,7 @@ int redirec_input(char *file)
 }
 /*This function is meant to redirect output to a specified file
 @param file file name to redirect output to
+@param boolean that indicates whether the operation is supposed to append or write for output redirection
 @return 0 on success and -1 on failure*/
 int redirec_output(char *file)
 {
