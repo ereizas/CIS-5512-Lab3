@@ -275,7 +275,7 @@ void pipe_loop(char **args, int num_pipes, _Bool bckgrnd)
 @param shell_args array of strings that the input line consists of
 @param num_args number of arguments given in the line*/
 void execute_non_built_ins(char **shell_args, int num_args){
-    if(!strcmp(shell_args[0],"|")||!strcmp(shell_args[0],"<")||!strcmp(shell_args[0],">")||!strcmp(shell_args[num_args-1],"|")||!strcmp(shell_args[num_args-1],"<")||!strcmp(shell_args[num_args-1],">"))
+    if(!strcmp(shell_args[0],"|")||!strcmp(shell_args[0],"<")||!strcmp(shell_args[0],">")||!strcmp(shell_args[0],">>")||!strcmp(shell_args[num_args-1],"|")||!strcmp(shell_args[num_args-1],"<")||!strcmp(shell_args[num_args-1],">")||!strcmp(shell_args[num_args-1],">>"))
     {
         puts("Invalid syntax.");
     }
@@ -284,7 +284,6 @@ void execute_non_built_ins(char **shell_args, int num_args){
         //temporary pointer to keep track of start of shell_args to help free memory later
         char **temp_start = shell_args;
         char **cmd = temp_start;
-        //see if exec_name needs a different assignment
         char *exec_name = *shell_args;
         //checks for symbolic link
         if(*exec_name!='.' && *exec_name!='/' && *exec_name!='~')
@@ -331,11 +330,18 @@ void execute_non_built_ins(char **shell_args, int num_args){
                 if(find_special(shell_args,">")==-1)
                 {
                     output_file=*shell_args;
+                    _Bool append = 0;
+                    if(!strcmp(curr_special,">>"))
+                    {
+                        append = 1;
+                    }
                     if(find_special(shell_args,"<")!=-1)
                     {
-                        output_file=*(shell_args+find_special(shell_args,"<")+1);
+                        input_file=*(shell_args+find_special(shell_args,"<")+1);
                     }
-                    execute(input_file,output_file,exec_name, cmd, bckgrnd,0);
+
+                    printf("%s %d\n",output_file, append);
+                    execute(input_file,output_file,exec_name, cmd, bckgrnd, append);
                 }
                 else
                 {

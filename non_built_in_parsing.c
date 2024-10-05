@@ -29,7 +29,7 @@ int count_pipes(char **args)
 @return : the pointer to the next special character or NULL if there are no more special characters*/
 char* get_first_special(char *args[])
 {
-    while(*args!=NULL && strcmp(*args,"|") && strcmp(*args,"<") && strcmp(*args,">"))
+    while(*args!=NULL && strcmp(*args,"|") && strcmp(*args,"<") && strcmp(*args,">>") && strcmp(*args,">"))
     {
         args++;
     }

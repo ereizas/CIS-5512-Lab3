@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
             if (!handle_builtins(shell_args, num_args)) {
                 execute_non_built_ins(shell_args, num_args);
             }
-            free(line);
             free(shell_args);
         }
+        free(line);
     }
 }
