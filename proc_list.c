@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "proc_list.h"
+#include "sys/types.h"
 /*
 Adds a process id to the process list, reallocating when necessary
 @param proc_list process list to add to
@@ -26,7 +27,7 @@ Proc_List create_proc_list(){
         .proc_limit=10,
         .add=add
     };
-    if((proc_list.pids=malloc(proc_list.proc_limit*sizeof(pid_t)))==-1){
+    if((proc_list.pids=malloc(proc_list.proc_limit*sizeof(pid_t)))==NULL){
         perror("malloc");
         exit(1);
     }
