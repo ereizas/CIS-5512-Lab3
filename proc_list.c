@@ -8,11 +8,12 @@ Adds a process id to the process list, reallocating when necessary
 */
 void add(Proc_List *proc_list, pid_t new_pid){
     if(proc_list->num_procs==proc_list->proc_limit){
-        if((realloc(proc_list->pids,(proc_list->proc_limit)*2*sizeof(pid_t)))==NULL){
+        pid_t *new_pids = realloc(proc_list->pids, (proc_list->proc_limit * 2) * sizeof(pid_t));
+        if (new_pids == NULL) {
             perror("realloc");
             return;
         }
-        proc_list->proc_limit*=2;
+        proc_list->pids = new_pids;
     }
     proc_list->pids[proc_list->num_procs]=new_pid;
     proc_list->num_procs+=1;
