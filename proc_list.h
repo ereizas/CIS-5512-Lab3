@@ -8,3 +8,4 @@ typedef struct{
 } Proc_List;
 
 void add(Proc_List *proc_list, pid_t new_pid);
+Proc_List create_proc_list();

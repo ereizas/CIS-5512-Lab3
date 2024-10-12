@@ -11,3 +11,13 @@ void add(Proc_List *proc_list, pid_t new_pid){
     proc_list->pids[proc_list->num_procs]=new_pid;
     proc_list->num_procs+=1;
 }
+
+Proc_List create_proc_list(){
+    Proc_List proc_list = {
+        .pids=NULL,
+        .num_procs=0,
+        .proc_limit=10,
+        .add=add
+    };
+    return proc_list;
+}
