@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
         if(shell_args!=NULL)
         {
             if (!handle_builtins(shell_args, num_args)) {
-                execute_non_built_ins(shell_args, num_args);
+                execute_non_built_ins(shell_args, num_args,pids,&num_procs,&proc_limit);
             }
             free(shell_args);
         }

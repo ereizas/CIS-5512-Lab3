@@ -84,10 +84,13 @@ int redirec_output(char *file, _Bool append)
 @param output_file name of file that output is redirected to (NULL if none specified)
 @param exec_name name of the executable file
 @param cmd list of string arguments passed to shell (null terminated after last argument)
-@param bckgrnd : boolean for whether the process should run in the background
+@param bckgrnd boolean for whether the process should run in the background
 @param append boolean to indicate if output redirection should append (1) or overwrite/not write (0).
+@param pids list of ids of processes started by the shell
+@param num_procs number of processes started by the shell
+@param proc_limit current limit for number of processes that can be tracked
 */
-void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _Bool bckgrnd, _Bool append)
+void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _Bool bckgrnd, _Bool append, pid_t *pids, unsigned int *num_procs, unsigned int *proc_limit)
 {
     pid_t fork_ret = 0; int wait_status = 0;
     if((fork_ret=fork())==-1)
@@ -128,6 +131,16 @@ void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _
         }
         else
         {
+            if(*num_procs==*proc_limit){
+                if((realloc(pids,(*proc_limit)*2*sizeof(pid_t)))==NULL){
+                    perror("realloc");
+                    return;
+                }
+                *proc_limit*=2;
+            }
+            pids[*num_procs]=fork_ret;
+            *num_procs+=1;
+            printf("[%d] %d\n", *num_procs, fork_ret);
             if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
             {
                 perror("waitpid");
@@ -274,7 +287,7 @@ void pipe_loop(char **args, int num_pipes, _Bool bckgrnd)
 /*Executes the non-built-in commands by parsing the arguments given for executables and operations
 @param shell_args array of strings that the input line consists of
 @param num_args number of arguments given in the line*/
-void execute_non_built_ins(char **shell_args, int num_args){
+void execute_non_built_ins(char **shell_args, int num_args, pid_t *pids, unsigned int *num_procs, unsigned int *proc_limit){
     if(!strcmp(shell_args[0],"|")||!strcmp(shell_args[0],"<")||!strcmp(shell_args[0],">")||!strcmp(shell_args[0],">>")||!strcmp(shell_args[num_args-1],"|")||!strcmp(shell_args[num_args-1],"<")||!strcmp(shell_args[num_args-1],">")||!strcmp(shell_args[num_args-1],">>"))
     {
         puts("Invalid syntax.");
@@ -318,7 +331,7 @@ void execute_non_built_ins(char **shell_args, int num_args){
                     {
                         output_file=*(shell_args+find_special(shell_args,">")+1);                        
                     }
-                    execute(input_file,output_file,exec_name,cmd, bckgrnd,0);
+                    execute(input_file,output_file,exec_name,cmd, bckgrnd, 0, pids, num_procs, proc_limit);
                 }
                 else
                 {
@@ -341,7 +354,7 @@ void execute_non_built_ins(char **shell_args, int num_args){
                     }
 
                     printf("%s %d\n",output_file, append);
-                    execute(input_file,output_file,exec_name, cmd, bckgrnd, append);
+                    execute(input_file,output_file,exec_name, cmd, bckgrnd, append, pids, num_procs, proc_limit);
                 }
                 else
                 {
@@ -355,7 +368,7 @@ void execute_non_built_ins(char **shell_args, int num_args){
         }
         else
         {
-            execute(input_file,output_file,exec_name,cmd, bckgrnd,0);
+            execute(input_file,output_file,exec_name,cmd, bckgrnd, 0, pids, num_procs, proc_limit);
         }
         //moves pointer back to beginning to free it
         shell_args=temp_start;
