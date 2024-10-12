@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "proc_list.h"
 void add(Proc_List *proc_list, pid_t new_pid){
     if(proc_list->num_procs==proc_list->proc_limit){
@@ -19,5 +20,9 @@ Proc_List create_proc_list(){
         .proc_limit=10,
         .add=add
     };
+    if((proc_list.pids=malloc(proc_list.proc_limit*sizeof(typeof(proc_list.pids))))==-1){
+        perror("malloc");
+        exit(1);
+    }
     return proc_list;
 }
