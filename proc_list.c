@@ -26,7 +26,7 @@ Proc_List create_proc_list(){
         .proc_limit=10,
         .add=add
     };
-    if((proc_list.pids=malloc(proc_list.proc_limit*sizeof(typeof(proc_list.pids))))==-1){
+    if((proc_list.pids=malloc(proc_list.proc_limit*sizeof(pid_t)))==-1){
         perror("malloc");
         exit(1);
     }
