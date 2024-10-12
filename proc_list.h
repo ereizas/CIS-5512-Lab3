@@ -1,5 +1,10 @@
 #include "sys/types.h"
 
+/*
+@param pids list of ids of processes started by the shell
+@param num_procs number of processes started by the shell
+@param proc_limit current limit for number of processes that can be tracked
+*/
 typedef struct{
     pid_t *pids;
     unsigned int num_procs;
