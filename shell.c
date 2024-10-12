@@ -9,8 +9,15 @@ This is the main file in which the shell will be ran.
 #include "built_ins.h"
 #include "non_built_in_parsing.h"
 #include "operations.h"
+#include "sys/types.h"
 int main(int argc, char *argv[])
 {
+    unsigned int num_procs = 0, proc_limit = 10;
+    pid_t *pids;
+    if((pids=malloc(proc_limit*sizeof(pid_t)))==NULL){
+        perror("malloc");
+        exit(1);
+    }
     while(1)
     {
         printf("%s", "<My_Shell>:");
@@ -40,4 +47,5 @@ int main(int argc, char *argv[])
         }
         free(line);
     }
+    free(pids);
 }
