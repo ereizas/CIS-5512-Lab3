@@ -67,4 +67,3 @@ char* parse_env(char *exec_name)
     }
     return NULL;    
 }
-
