@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         if((line=malloc(LINE_MAX))==NULL)
         {
             perror("malloc");
-            exit(1);
+            continue;
         }
         if(getline(&line,&len,stdin)==-1)
         {
@@ -35,8 +35,14 @@ int main(int argc, char *argv[])
         char **shell_args = parse(line," \n",&num_args);
         if(shell_args!=NULL)
         {
-            if (!handle_builtins(shell_args, num_args)) {
+            short int built_in = handle_builtins(shell_args, num_args);
+            if (!built_in) {
                 execute_non_built_ins(shell_args, num_args,&proc_list);
+            }else if(built_in==2){
+                free(shell_args);
+                free(line);
+                free(proc_list.pids);
+                exit(0);
             }
             free(shell_args);
         }

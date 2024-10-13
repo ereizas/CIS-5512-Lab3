@@ -9,17 +9,18 @@ This file is meant to provide built-in functions for the shell.
 #include <sys/wait.h>
 #define PATH_MAX 4096
 
-/*Exits the shell(program)
+/*Indicates if the shell's exit command was entered correctly
 @param num_args number of arguments passed into the shell*/
-void shell_exit(int num_args)
+_Bool shell_exit(int num_args)
 {
     if(num_args==1)
     {
-        exit(0);
+        return 1;
     }
     else
     {
         puts("Too many arguments.");
+        return 0;
     }
 }
 

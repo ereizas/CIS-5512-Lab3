@@ -18,8 +18,11 @@ This file is meant to provide functions for execution of programs and redirectio
 @param num_args number of arguments given in the line*/
 int handle_builtins(char **shell_args, int num_args) {
     if (strcmp(shell_args[0], "exit") == 0) {
-        shell_exit(num_args);
-        return 1;
+        if(shell_exit(num_args)){
+            return 2;
+        }else{
+            return 1;
+        }
     } else if (strcmp(shell_args[0], "help") == 0) {
         help(num_args, shell_args);
         return 1;
@@ -94,7 +97,7 @@ void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _
     if((fork_ret=fork())==-1)
     {
         perror("fork");
-        exit(1);
+        return;
     }
     else if(fork_ret==0)
     {
@@ -115,7 +118,7 @@ void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _
         if(execv(exec_name,cmd)==-1)
         {
             perror("execv");
-            exit(1);
+            return;
         }
     }
     else
@@ -151,7 +154,7 @@ void pipe_loop(char **args, int num_pipes, _Bool bckgrnd)
         if(pipe(pipes[i])==-1)
         {
             perror("pipe");
-            exit(1);
+            return;
         }
     }
     for(int i = 0; i<num_pipes+1;++i)
@@ -230,14 +233,14 @@ void pipe_loop(char **args, int num_pipes, _Bool bckgrnd)
                     if((cmdline[0]=strdup(exec_name))==NULL)
                     {
                         perror("strdup");
-                        exit(1);
+                        return;
                     }
                 }                      
             }
             if(execv(exec_name,cmdline)==-1)
             {
                 perror("execv");
-                exit(1);
+                return;
             }
         }
         else

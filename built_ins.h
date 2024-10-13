@@ -1,4 +1,4 @@
-void shell_exit(int num_args);
+_Bool shell_exit(int num_args);
 void help(int num_args, char **args);
 void pwd(int num_args);
 void cd(int num_args, char **args);
