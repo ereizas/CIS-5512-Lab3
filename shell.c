@@ -8,8 +8,8 @@ This is the main file in which the shell will be ran.
 #include "helpers.h"
 #include "built_ins.h"
 #include "non_built_in_parsing.h"
-#include "operations.h"
 #include "proc_list.h"
+#include "operations.h"
 int main(int argc, char *argv[])
 {
     Proc_List proc_list = create_proc_list();
