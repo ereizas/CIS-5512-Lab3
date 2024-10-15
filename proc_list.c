@@ -20,6 +20,21 @@ void add(Proc_List *proc_list, pid_t new_pid){
     proc_list->num_procs+=1;
 }
 
+/*
+Searches for the target pid and return index if found or -1 if not found
+@param proc_list pointer to the struct with the pids
+@param target pid to look for
+*/
+int search(struct Process_List *proc_list, pid_t target){
+    for(int i=0;i<proc_list->num_procs;++i){
+        if(proc_list->pids[i]==target)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 Proc_List create_proc_list(){
     Proc_List proc_list = {
         .pids=NULL,
