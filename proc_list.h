@@ -11,9 +11,11 @@ struct  Process_List{
     unsigned int proc_limit;
     void (*add)(struct Process_List *proc_list, pid_t new_pid);
     int (*search)(struct Process_List *proc_list, pid_t target);
+    _Bool (*remove)(struct Process_List *proc_list, pid_t target);
 };
 typedef struct Process_List Proc_List;
 
 void add(Proc_List *proc_list, pid_t new_pid);
-int search(struct Process_List *proc_list, pid_t target);
+int search(Proc_List *proc_list, pid_t target);
+_Bool remove_pid(Proc_List *proc_list, pid_t target);
 Proc_List create_proc_list();

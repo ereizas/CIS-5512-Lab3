@@ -129,7 +129,7 @@ void shell_kill(int num_args, char **args, Proc_List *proc_list){
     if(num_args==2){
         int wait_status = 0;
         pid_t pid = atoi(args[1]);
-        if(search(proc_list, pid)!=-1){
+        if(remove_pid(proc_list, pid)){
             if(kill(pid, SIGTERM)==-1){
             perror("kill");
             return;

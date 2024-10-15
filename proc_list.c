@@ -25,7 +25,7 @@ Searches for the target pid and return index if found or -1 if not found
 @param proc_list pointer to the struct with the pids
 @param target pid to look for
 */
-int search(struct Process_List *proc_list, pid_t target){
+int search(Proc_List *proc_list, pid_t target){
     for(int i=0;i<proc_list->num_procs;++i){
         if(proc_list->pids[i]==target)
         {
@@ -47,4 +47,23 @@ Proc_List create_proc_list(){
         exit(1);
     }
     return proc_list;
+}
+
+/*
+Searches for the target pid and removes it if found
+@param proc_list pointer to the struct with the pids
+@param target pid to remove
+@return 1 if removal successful, 0 if target not in list
+*/
+_Bool remove_pid(Proc_List *proc_list, pid_t target){
+    unsigned int t = search(proc_list,target);
+    if(t!=-1){
+        unsigned int i;
+        for(i = t; i<proc_list->num_procs-1;++i){
+            proc_list->pids[i]=proc_list->pids[i+1];
+        }
+        proc_list->pids[i]=-1;
+        return 1;
+    }
+    return 0;
 }
