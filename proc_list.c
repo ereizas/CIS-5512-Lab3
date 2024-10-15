@@ -40,7 +40,9 @@ Proc_List create_proc_list(){
         .pids=NULL,
         .num_procs=0,
         .proc_limit=10,
-        .add=add
+        .add=add,
+        .search=search,
+        .remove=remove_pid
     };
     if((proc_list.pids=malloc(proc_list.proc_limit*sizeof(pid_t)))==NULL){
         perror("malloc");
@@ -56,7 +58,7 @@ Searches for the target pid and removes it if found
 @return 1 if removal successful, 0 if target not in list
 */
 _Bool remove_pid(Proc_List *proc_list, pid_t target){
-    unsigned int t = search(proc_list,target);
+    unsigned int t = proc_list->search(proc_list,target);
     if(t!=-1){
         unsigned int i;
         for(i = t; i<proc_list->num_procs-1;++i){
