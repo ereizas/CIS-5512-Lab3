@@ -65,6 +65,7 @@ _Bool remove_pid(Proc_List *proc_list, pid_t target){
             proc_list->pids[i]=proc_list->pids[i+1];
         }
         proc_list->pids[i]=-1;
+        proc_list->num_procs-=1;
         return 1;
     }
     return 0;
