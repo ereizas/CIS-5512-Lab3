@@ -129,15 +129,21 @@ void shell_kill(int num_args, char **args, Proc_List *proc_list){
     if(num_args==2){
         int wait_status = 0;
         pid_t pid = atoi(args[1]);
-        if(kill(pid, SIGTERM)==-1){
+        if(search(proc_list, pid)!=-1){
+            if(kill(pid, SIGTERM)==-1){
             perror("kill");
             return;
+            }
+            //ensures parent colects child process to prevent zombie
+            if(waitpid(pid,&wait_status,0)==-1)
+            {
+                perror("waitpid");
+            }
+            printf("Process %d terminated\n", pid);
         }
-        if(waitpid(pid,&wait_status,0)==-1)
-        {
-            perror("waitpid");
+        else{
+            puts("The target process was not spawned by the shell.");
         }
-        printf("Process %d terminated\n", pid);
     }
     else{
         puts("Usage: kill <pid>");
