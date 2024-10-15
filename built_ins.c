@@ -7,6 +7,8 @@ This file is meant to provide built-in functions for the shell.
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include "proc_list.h"
 #define PATH_MAX 4096
 
 /*Indicates if the shell's exit command was entered correctly
@@ -117,5 +119,27 @@ void shell_wait(int num_args)
     {
         puts("Too many arguments.");
     }
-    
+}
+/* Terminates a background process started by the shell
+@param num_args number of arguments passed into the shell
+@param args args string arguments passed into the shell
+@param proc_list pointer to object for list of background process ids
+*/
+void shell_kill(int num_args, char **args, Proc_List *proc_list){
+    if(num_args==2){
+        int wait_status = 0;
+        pid_t pid = atoi(args[1]);
+        if(kill(pid, SIGTERM)==-1){
+            perror("kill");
+            return;
+        }
+        if(waitpid(pid,&wait_status,0)==-1)
+        {
+            perror("waitpid");
+        }
+        printf("Process %d terminated\n", pid);
+    }
+    else{
+        puts("Usage: kill <pid>");
+    }
 }
