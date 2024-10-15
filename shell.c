@@ -6,9 +6,9 @@ This is the main file in which the shell will be ran.
 #include <stdlib.h>
 #include <string.h>
 #include "helpers.h"
+#include "proc_list.h"
 #include "built_ins.h"
 #include "non_built_in_parsing.h"
-#include "proc_list.h"
 #include "operations.h"
 int main(int argc, char *argv[])
 {
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         char **shell_args = parse(line," \n",&num_args);
         if(shell_args!=NULL)
         {
-            short int built_in = handle_builtins(shell_args, num_args);
+            short int built_in = handle_builtins(shell_args, num_args, &proc_list);
             if (!built_in) {
                 execute_non_built_ins(shell_args, num_args,&proc_list);
             }else if(built_in==2){

@@ -9,14 +9,14 @@ This file is meant to provide functions for execution of programs and redirectio
 #include <sys/wait.h>
 #include <fcntl.h>
 #include "non_built_in_parsing.h"
+#include "proc_list.h"
 #include "built_ins.h"
 #include "helpers.h"
-#include "proc_list.h"
 
 /*Checks if the first command is a builtin, and executes it if it is one and returns one, otherwise it returns 0
 @param shell_args array of strings that the input line consists of
 @param num_args number of arguments given in the line*/
-int handle_builtins(char **shell_args, int num_args) {
+int handle_builtins(char **shell_args, int num_args, Proc_List *proc_list) {
     if (strcmp(shell_args[0], "exit") == 0) {
         if(shell_exit(num_args)){
             return 2;
@@ -34,6 +34,10 @@ int handle_builtins(char **shell_args, int num_args) {
         return 1;
     } else if (strcmp(shell_args[0], "wait") == 0) {
         shell_wait(num_args);
+        return 1;
+    }
+    else if (strcmp(shell_args[0], "kill")==0){
+        shell_kill(num_args, shell_args, proc_list);
         return 1;
     }
     return 0; // Not a built-in
