@@ -36,6 +36,10 @@ int handle_builtins(char **shell_args, int num_args, Proc_List *proc_list) {
         shell_wait(num_args);
         return 1;
     }
+    else if(strcmp(shell_args[0], "killall")==0){
+        killall(num_args,proc_list);
+        return 1;
+    }
     else if (strcmp(shell_args[0], "kill")==0){
         shell_kill(num_args, shell_args, proc_list);
         return 1;

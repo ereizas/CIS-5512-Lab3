@@ -120,6 +120,23 @@ void shell_wait(int num_args)
         puts("Too many arguments.");
     }
 }
+/*
+Calls the kill system function call on a specific pid
+@param pid id of the process to kill
+*/
+void kill_pid(pid_t pid){
+    int wait_status;
+    if(kill(pid, SIGTERM)==-1){
+        perror("kill");
+        return;
+    }
+    //ensures parent colects child process to prevent zombie
+    if(waitpid(pid,&wait_status,0)==-1)
+    {
+        perror("waitpid");
+    }
+    printf("Process %d terminated\n", pid);
+}
 /* Terminates a background process started by the shell
 @param num_args number of arguments passed into the shell
 @param args args string arguments passed into the shell
@@ -127,19 +144,9 @@ void shell_wait(int num_args)
 */
 void shell_kill(int num_args, char **args, Proc_List *proc_list){
     if(num_args==2){
-        int wait_status = 0;
         pid_t pid = atoi(args[1]);
         if(proc_list->remove(proc_list, pid)){
-            if(kill(pid, SIGTERM)==-1){
-            perror("kill");
-            return;
-            }
-            //ensures parent colects child process to prevent zombie
-            if(waitpid(pid,&wait_status,0)==-1)
-            {
-                perror("waitpid");
-            }
-            printf("Process %d terminated\n", pid);
+            kill_pid(pid);
         }
         else{
             puts("The target process was not spawned by the shell.");
@@ -147,5 +154,19 @@ void shell_kill(int num_args, char **args, Proc_List *proc_list){
     }
     else{
         puts("Usage: kill <pid>");
+    }
+}
+
+void killall(int num_args, Proc_List *proc_list){
+    if(num_args==1){
+        unsigned int num_procs = proc_list->num_procs;
+        for(int i = 0; i<num_procs; ++i){
+            kill_pid(proc_list->pids[i]);
+            proc_list->pids[i]=-1;
+            proc_list->num_procs-=1;
+        }
+    }
+    else{
+        puts("Usage: killall");
     }
 }
