@@ -5,3 +5,4 @@ void cd(int num_args, char **args);
 void shell_wait(int num_args);
 void shell_kill(int num_args, char **args, Proc_List *proc_list);
 void killall(int num_args, Proc_List *proc_list);
+void pstatus(int num_args, Proc_List *proc_list);

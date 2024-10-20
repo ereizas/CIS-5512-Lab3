@@ -9,7 +9,11 @@ This file is meant to provide built-in functions for the shell.
 #include <sys/wait.h>
 #include <signal.h>
 #include "proc_list.h"
+#include <fcntl.h>
 #define PATH_MAX 4096
+#define PSTATUS_PATH_MAX 31
+#define STR_MAX 2048
+#define PSTATE_DESCR_MAX 38
 
 /*Indicates if the shell's exit command was entered correctly
 @param num_args number of arguments passed into the shell*/
@@ -157,6 +161,7 @@ void shell_kill(int num_args, char **args, Proc_List *proc_list){
     }
 }
 
+
 void killall(int num_args, Proc_List *proc_list){
     if(num_args==1){
         unsigned int num_procs = proc_list->num_procs;
@@ -168,5 +173,48 @@ void killall(int num_args, Proc_List *proc_list){
     }
     else{
         puts("Usage: killall");
+    }
+}
+
+/*
+Prints out the status of each process in pid list of proc_list based on the /proc/<pid>/status file
+@param num_args number of arguments passed into the shell
+@param proc_list pointer to object for list of background process ids
+*/
+void pstatus(int num_args, Proc_List *proc_list){
+    for(int i = 0;i<proc_list->num_procs;++i){
+        char path[PSTATUS_PATH_MAX];
+        snprintf(path,sizeof(path),"/proc/%d/status",proc_list->pids[i]);
+        int fd;
+        if ((fd=open(path,O_RDONLY))==-1)
+        {
+            perror("open");
+            exit(1);
+        }
+        char status[PSTATE_DESCR_MAX];
+        status[0]='?';
+        char buff[STR_MAX];
+        while(status[0]=='?'){
+            if(read(fd, buff,STR_MAX)==-1){
+                perror("read");
+                return;
+            }
+            char state_line_start[8] = "State:\t";
+            char *state_line_ptr = strstr(buff,state_line_start);
+            if(state_line_ptr){
+                state_line_ptr+=strlen(state_line_start);
+                while(*state_line_ptr!='('){
+                    state_line_ptr++;
+                }
+                state_line_ptr++;
+                int j=0;
+                while(*state_line_ptr!=')'){
+                    status[j]=*state_line_ptr;
+                    j++;
+                    state_line_ptr++;
+                }
+            }
+        }
+        printf("Process %d: %s\n", proc_list->pids[i], status);
     }
 }

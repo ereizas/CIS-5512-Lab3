@@ -44,6 +44,10 @@ int handle_builtins(char **shell_args, int num_args, Proc_List *proc_list) {
         shell_kill(num_args, shell_args, proc_list);
         return 1;
     }
+    else if(strcmp(shell_args[0], "pstatus")==0){
+        pstatus(num_args, proc_list);
+        return 1;
+    }
     return 0; // Not a built-in
 }
 
