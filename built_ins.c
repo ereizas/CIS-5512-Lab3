@@ -161,7 +161,11 @@ void shell_kill(int num_args, char **args, Proc_List *proc_list){
     }
 }
 
-
+/*
+Kills all active background processes started by the shell
+@param num_args number of arguments passed into the shell
+@param proc_list pointer to object for list of background process ids
+*/
 void killall(int num_args, Proc_List *proc_list){
     if(num_args==1){
         unsigned int num_procs = proc_list->num_procs;
