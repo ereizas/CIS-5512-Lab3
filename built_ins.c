@@ -185,7 +185,7 @@ Prints out the status of each process in pid list of proc_list based on the /pro
 @param num_args number of arguments passed into the shell
 @param proc_list pointer to object for list of background process ids
 */
-void pstatus(int num_args, Proc_List *proc_list){
+void ps(int num_args, Proc_List *proc_list){
     for(int i = 0;i<proc_list->num_procs;++i){
         char path[PSTATUS_PATH_MAX];
         snprintf(path,sizeof(path),"/proc/%d/status",proc_list->pids[i]);
