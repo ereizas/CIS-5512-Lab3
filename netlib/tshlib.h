@@ -11,6 +11,7 @@ void OpPut(/*void*/) ;
 void OpGet(/*void*/) ;
 void OpExit(/*void*/) ;
 void OpRetrieve(/*void*/) ;
+void OpShell() ;
 
 int tshsock ;
 

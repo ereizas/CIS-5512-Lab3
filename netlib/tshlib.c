@@ -7,6 +7,7 @@
 
 #include "tshlib.h"
 #include "../operations.h"
+#define CMD_MAX 4096
 int status;
 
 int main(int argc, char **argv)
@@ -217,7 +218,11 @@ void OpExit()
 
 void OpShell()
 {
-
+   char cmd[CMD_MAX];
+   printf("TSH_OP_SHELL");
+   printf("\n-----------\n") ;
+   printf("Enter the shell command: ");
+   scanf("%s",cmd);
 }
 
 
