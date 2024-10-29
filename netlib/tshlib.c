@@ -214,6 +214,11 @@ void OpExit()
    getchar() ;  getchar() ;
 }
 
+void OpShell()
+{
+
+}
+
 
 int connectTsh(u_short port)
 {
