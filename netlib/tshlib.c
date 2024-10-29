@@ -6,6 +6,7 @@
 /*.........................................................................*/
 
 #include "tshlib.h"
+#include "../operations.h"
 int status;
 
 int main(int argc, char **argv)
