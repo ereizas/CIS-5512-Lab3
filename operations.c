@@ -9,7 +9,7 @@ This file is meant to provide functions for execution of programs and redirectio
 #include <sys/wait.h>
 #include <fcntl.h>
 #include "non_built_in_parsing.h"
-#include "proc_list.h"
+#include "operations.h"
 #include "built_ins.h"
 #include "helpers.h"
 

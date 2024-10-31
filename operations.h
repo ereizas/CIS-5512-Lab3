@@ -1,3 +1,4 @@
+#include "proc_list.h"
 int handle_builtins(char **shell_args, int num_args, Proc_List *proc_list);
 void execute_non_built_ins(char **shell_args, int num_args, Proc_List *proc_list);
 int redirec_input(char *file);
