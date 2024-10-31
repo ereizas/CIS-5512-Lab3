@@ -1,3 +1,5 @@
+#ifndef PROC_LIST_H  // Start of include guard
+#define PROC_LIST_H
 #include "sys/types.h"
 #include <stdio.h>
 /*
@@ -19,3 +21,4 @@ void add(Proc_List *proc_list, pid_t new_pid);
 int search(Proc_List *proc_list, pid_t target);
 _Bool remove_pid(Proc_List *proc_list, pid_t target);
 Proc_List create_proc_list();
+#endif
