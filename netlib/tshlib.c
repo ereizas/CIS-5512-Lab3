@@ -6,7 +6,6 @@
 /*.........................................................................*/
 
 #include "tshlib.h"
-#include "../operations.h"
 #define CMD_MAX 4096
 int status;
 
@@ -23,6 +22,11 @@ int main(int argc, char **argv)
        printf("Usage : %s port\n", argv[0]) ;
        exit(1) ;
     }
+   pid_t shell_pid = -1;
+   static void (*shell_op_func[])(pid_t*) =
+   {
+      OpShell
+   };
 	while (TRUE)
     {
        this_op = drawMenu() + TSH_OP_MIN - 1 ;
@@ -40,9 +44,12 @@ int main(int argc, char **argv)
 		   // Response processing
 		   (*op_func[ntohs(this_op) - TSH_OP_MIN])() ;
 		   close(tshsock) ;
-	   }			/* validate operation & process */
-       else
-	  return 0 ;
+	   }
+      else if (this_op >= TSH_SHELL_OP_MIN && this_op <= TSH_SHELL_OP_MAX){
+         (*shell_op_func[this_op-TSH_SHELL_OP_MIN])(&shell_pid);
+      }
+      else
+	      return 0 ;
     }
 }
 
@@ -216,7 +223,7 @@ void OpExit()
    getchar() ;  getchar() ;
 }
 
-void OpShell()
+void OpShell(pid_t *shell_pid)
 {
    char cmd[CMD_MAX];
    printf("TSH_OP_SHELL");
