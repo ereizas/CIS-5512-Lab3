@@ -228,7 +228,6 @@ Starts the shell in the background
 @param shell_pid : pointer to pid_t var that tracks the current shell's pid
 */
 void start_shell(pid_t *shell_pid){
-   //TODO: Redirect stdin and stdout of shell to two different files
    pid_t fork_ret = 0; int wait_status = 0;
    if((fork_ret=fork())==-1)
    {
@@ -236,7 +235,7 @@ void start_shell(pid_t *shell_pid){
       return;
    }
    if(fork_ret==0){
-
+      //TODO: Redirect stdin and stdout of shell to two different files
       if(execlp("../shell","../shell",NULL)==-1)
         {
             perror("execlp");
@@ -252,6 +251,10 @@ void start_shell(pid_t *shell_pid){
    }
 }
 
+/*
+Starts a shell in the background if not already started and feeds it a command to execute
+@param shell_pid : pointer to pid_t var that tracks the current shell's pid
+*/
 void OpShell(pid_t *shell_pid)
 {
    char cmd[CMD_MAX];
