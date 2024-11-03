@@ -12,6 +12,7 @@ void OpGet(/*void*/) ;
 void OpExit(/*void*/) ;
 void OpRetrieve(/*void*/) ;
 void OpShell(pid_t *shell_pid) ;
+void start_shell(pid_t *shell_pid) ;
 
 int tshsock ;
 

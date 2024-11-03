@@ -223,6 +223,35 @@ void OpExit()
    getchar() ;  getchar() ;
 }
 
+/*
+Starts the shell in the background
+@param shell_pid : pointer to pid_t var that tracks the current shell's pid
+*/
+void start_shell(pid_t *shell_pid){
+   //TODO: Redirect stdin and stdout of shell to two different files
+   pid_t fork_ret = 0; int wait_status = 0;
+   if((fork_ret=fork())==-1)
+   {
+      perror("fork");
+      return;
+   }
+   if(fork_ret==0){
+
+      if(execlp("../shell","../shell",NULL)==-1)
+        {
+            perror("execlp");
+            return;
+        }
+   }
+   else{
+      *shell_pid=fork_ret;
+      if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
+      {
+            perror("waitpid");
+      }
+   }
+}
+
 void OpShell(pid_t *shell_pid)
 {
    char cmd[CMD_MAX];
@@ -230,6 +259,10 @@ void OpShell(pid_t *shell_pid)
    printf("\n-----------\n") ;
    printf("Enter the shell command: ");
    scanf("%s",cmd);
+   if(*shell_pid==-1){
+      start_shell(shell_pid);
+      printf("Shell pid: %d", *shell_pid);
+   }
 }
 
 
