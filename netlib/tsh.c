@@ -57,20 +57,22 @@ void start()
 
    while (TRUE)
     {				/* read operation on TSH port */
-       if ((newsock = get_connection(oldsock, NULL)) == -1)
-	{
-	   exit(1) ;
-	}
-       if (!readn(newsock, (char *)&this_op, sizeof(u_short)))
-	{
-	   close(newsock) ;
-	   continue ;
-	}
-				/* invoke function for operation */
-       this_op = ntohs(this_op) ;
+      if ((newsock = get_connection(oldsock, NULL)) == -1)
+      {
+         exit(1) ;
+      }
+      if (!readn(newsock, (char *)&this_op, sizeof(u_short)))
+      {
+         close(newsock) ;
+         continue ;
+      }
+		/* invoke function for operation */
+      this_op = ntohs(this_op) ;
 
-       if (this_op >= TSH_OP_MIN && this_op <= TSH_OP_MAX)
-	  (*op_func[this_op - TSH_OP_MIN])() ;
+      if (this_op >= TSH_OP_MIN && this_op <= TSH_OP_MAX)
+      {
+	      (*op_func[this_op - TSH_OP_MIN])() ;
+      }
 
        close(newsock) ;
     }
