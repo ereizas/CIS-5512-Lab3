@@ -53,7 +53,9 @@ int initCommon(u_short port)
 
 void start()
 {
-   static void (*op_func[])() = {OpPut, OpGet, OpGet, OpExit} ;
+   static void (*op_func[])() = {OpPut, OpGet, OpGet} ;
+   pid_t shell_pid;
+   static void (*shell_op_func[])(pid_t*) = {OpShell};
 
    while (TRUE)
     {				/* read operation on TSH port */
@@ -69,9 +71,16 @@ void start()
 		/* invoke function for operation */
       this_op = ntohs(this_op) ;
 
-      if (this_op >= TSH_OP_MIN && this_op <= TSH_OP_MAX)
+      if (this_op >= TSH_OP_MIN && this_op < TSH_SHELL_OP_MIN)
       {
 	      (*op_func[this_op - TSH_OP_MIN])() ;
+      }
+      else if(this_op >= TSH_SHELL_OP_MIN && this_op <=TSH_OP_MAX){
+         (*shell_op_func[this_op - TSH_SHELL_OP_MIN])(&shell_pid);
+      }
+      else if(this_op==OP_EXIT)
+      {
+         OpExit();
       }
 
        close(newsock) ;
@@ -204,6 +213,14 @@ void OpGet()
 
    if (this_op == TSH_OP_GET)
       deleteTuple(s, &in) ;
+}
+
+
+
+/*
+Reads the command from the client, starts the shell if not started, executes the command in the shell, and sends the shell output to the client
+*/
+void OpShell(){
 }
 
 

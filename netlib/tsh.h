@@ -74,6 +74,7 @@ int total_fetched = 0;
 
 void OpPut(/*void*/) ;
 void OpGet(/*void*/) ;
+void OpShell() ;
 void OpExit(/*void*/) ;
 
 
