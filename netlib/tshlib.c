@@ -13,20 +13,15 @@ int main(int argc, char **argv)
 {
 	static void (*op_func[])() = 
 	{
-		OpPut, OpGet, OpGet, OpExit
-    } ;
+		OpPut, OpGet, OpGet, OpShell, OpExit
+   };
 	u_short this_op ;
    
 	if (argc < 2)
-    {
-       printf("Usage : %s port\n", argv[0]) ;
-       exit(1) ;
-    }
-   pid_t shell_pid = -1;
-   static void (*shell_op_func[])(pid_t*) =
    {
-      OpShell
-   };
+      printf("Usage : %s port\n", argv[0]) ;
+      exit(1) ;
+   }
 	while (TRUE)
     {
        this_op = drawMenu() + TSH_OP_MIN - 1 ;
@@ -45,9 +40,6 @@ int main(int argc, char **argv)
 		   (*op_func[ntohs(this_op) - TSH_OP_MIN])() ;
 		   close(tshsock) ;
 	   }
-      else if (this_op >= TSH_SHELL_OP_MIN && this_op <= TSH_SHELL_OP_MAX){
-         (*shell_op_func[this_op-TSH_SHELL_OP_MIN])(&shell_pid);
-      }
       else
 	      return 0 ;
     }
@@ -267,20 +259,31 @@ void start_shell(pid_t *shell_pid){
 }
 
 /*
-Starts a shell in the background if not already started and feeds it a command to execute
-@param shell_pid : pointer to pid_t var that tracks the current shell's pid
+Prompts user for shell command, sends the command, and prints the output of the command
 */
-void OpShell(pid_t *shell_pid)
+void OpShell()
 {
    char cmd[CMD_MAX];
    printf("TSH_OP_SHELL");
    printf("\n-----------\n") ;
    printf("Enter the shell command: ");
    scanf("%s",cmd);
-   if(*shell_pid==-1){
-      start_shell(shell_pid);
-      printf("Shell pid: %d", *shell_pid);
+   if (!writen(tshsock, cmd, sizeof(cmd)))
+   {
+      perror("\nOpShell::writen\n") ;
+      getchar() ;
+      return ;
    }
+   char shell_out[CMD_MAX];
+   if (!readn(tshsock, shell_out, sizeof(shell_out)))
+   {
+      perror("\nOpShell::readn\n") ;
+      getchar() ;
+      return ;
+   }
+   printf("\n\nFrom TSH :\n");
+   printf("%s",shell_out);
+   getchar();
 }
 
 
