@@ -527,9 +527,7 @@ typedef struct {
 */
 
 #define TSH_OP_MIN                401
-#define TSH_OP_MAX                403
-#define TSH_SHELL_OP_MIN          404
-#define TSH_SHELL_OP_MAX          409
+#define TSH_OP_MAX                409
 #define TSH_OP_CNT                15 
 
 #define TSH_OP_PUT                401
