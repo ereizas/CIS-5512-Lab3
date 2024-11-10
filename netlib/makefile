@@ -4,7 +4,7 @@ OBJS = ../obj
 EXTRA = 
 cc = gcc
 
-all : netlib.o wall_clock.o archive ranl move tshlib
+all : netlib.o wall_clock.o archive ranl move tshlib tsh
 
 wall_clock.o : wall_clock.c
 	$(cc) $(EXTRA) $(INCL) $(FLAGS) wall_clock.c $(TAIL)
@@ -18,6 +18,9 @@ move :
 	/bin/rm -f *.o
 tshlib: tshlib.c
 	$(cc) $(EXTRA) $(INCL) -g -o tshlib tshlib.c -L$(OBJS) -lsng
+
+tsh: tsh.c
+	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c -L$(OBJS) -lsng
 
 clean: 
 	rm tshlib
