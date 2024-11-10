@@ -232,15 +232,30 @@ void start_shell(pid_t *shell_pid){
    if((fork_ret=fork())==-1)
    {
       perror("fork");
+      puts("Shell could not start");
       return;
    }
    if(fork_ret==0){
+      int input_fd;
+      if((input_fd= open("input.txt", O_RDONLY|O_CREAT, 0644))<0){
+         perror("open");
+         return;
+      }
+      int output_fd;
+      if((output_fd= open("output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644))<0){
+         perror("open");
+         return;
+      }
+      dup2(input_fd, STDIN_FILENO);
+      dup2(output_fd, STDOUT_FILENO);
+      close(input_fd);
+      close(output_fd);
       //TODO: Redirect stdin and stdout of shell to two different files
-      if(execlp("../shell","../shell",NULL)==-1)
-        {
-            perror("execlp");
-            return;
-        }
+      if(execlp("../myShell/shell","../myShell/shell",NULL)==-1)
+      {
+         perror("execlp");
+         return;
+      }
    }
    else{
       *shell_pid=fork_ret;
