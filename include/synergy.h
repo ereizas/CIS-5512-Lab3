@@ -525,7 +525,7 @@ typedef struct {
 /*
   TSH specific data
 */
-
+#define CMD_MAX 4096
 #define TSH_OP_MIN                401
 #define TSH_SHELL_OP_MIN          404
 #define TSH_OP_MAX                408

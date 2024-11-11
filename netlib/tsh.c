@@ -215,12 +215,19 @@ void OpGet()
       deleteTuple(s, &in) ;
 }
 
-
-
 /*
 Reads the command from the client, starts the shell if not started, executes the command in the shell, and sends the shell output to the client
+@param shell_pid : pointer to pid for shell
 */
-void OpShell(){
+void OpShell(pid_t *shell_pid){
+   char cmd[CMD_MAX];
+   if (!readn(newsock, cmd, sizeof(cmd)))
+      return ;
+   if(*shell_pid==-1){
+      start_shell(shell_pid);
+   }
+   char shell_out[CMD_MAX] = "Test";
+   writen(newsock, shell_out, sizeof(tsh_put_ot)) ;
 }
 
 
