@@ -231,12 +231,11 @@ void OpShell(pid_t *shell_pid){
    char cmd[CMD_MAX];
    if (!readn(newsock, cmd, sizeof(cmd)))
       return ;
-   printf("Command: %s\n",cmd);
-   /*if(*shell_pid==-1){
+   if(*shell_pid==-1){
       start_shell(shell_pid);
-   }*/
+   }
    char shell_out[CMD_MAX] = "Test";
-   writen(newsock, shell_out, sizeof(tsh_put_ot)) ;
+   writen(newsock, shell_out, sizeof(shell_out)) ;
 }
 
 
