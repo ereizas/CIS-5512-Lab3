@@ -85,7 +85,7 @@ void start()
 	      (*op_func[this_op - TSH_OP_MIN])() ;
       }
       else if(this_op >= TSH_SHELL_OP_MIN && this_op <=TSH_OP_MAX){
-         (*shell_op_func[this_op - TSH_SHELL_OP_MIN])(&shell_pid);
+         (*shell_op_func[this_op - TSH_SHELL_OP_MIN])(&shell_pid,in_fd,out_fd);
       }
       else if(this_op==OP_EXIT)
       {
