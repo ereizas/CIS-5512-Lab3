@@ -216,6 +216,14 @@ void OpGet()
 }
 
 /*
+Starts the shell in the background
+@param shell_pid : pointer to pid_t var that tracks the current shell's pid
+*/
+void start_shell(pid_t *shell_pid){
+   return;
+}
+
+/*
 Reads the command from the client, starts the shell if not started, executes the command in the shell, and sends the shell output to the client
 @param shell_pid : pointer to pid for shell
 */
