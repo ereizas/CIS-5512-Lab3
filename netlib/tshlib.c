@@ -6,7 +6,6 @@
 /*.........................................................................*/
 
 #include "tshlib.h"
-#define CMD_MAX 4096
 int status;
 
 int main(int argc, char **argv)
@@ -213,49 +212,6 @@ void OpExit()
    printf("\nstatus : %d", ntohs(in.status)) ;
    printf("\nerror : %d\n", ntohs(in.error)) ;
    getchar() ;  getchar() ;
-}
-
-/*
-Starts the shell in the background
-@param shell_pid : pointer to pid_t var that tracks the current shell's pid
-*/
-void start_shell(pid_t *shell_pid){
-   pid_t fork_ret = 0; int wait_status = 0;
-   if((fork_ret=fork())==-1)
-   {
-      perror("fork");
-      puts("Shell could not start");
-      return;
-   }
-   if(fork_ret==0){
-      int input_fd;
-      if((input_fd= open("input.txt", O_RDONLY|O_CREAT, 0644))<0){
-         perror("open");
-         return;
-      }
-      int output_fd;
-      if((output_fd= open("output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644))<0){
-         perror("open");
-         return;
-      }
-      dup2(input_fd, STDIN_FILENO);
-      dup2(output_fd, STDOUT_FILENO);
-      close(input_fd);
-      close(output_fd);
-      //TODO: Redirect stdin and stdout of shell to two different files
-      if(execlp("../myShell/shell","../myShell/shell",NULL)==-1)
-      {
-         perror("execlp");
-         return;
-      }
-   }
-   else{
-      *shell_pid=fork_ret;
-      if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
-      {
-            perror("waitpid");
-      }
-   }
 }
 
 /*
