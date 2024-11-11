@@ -23,4 +23,4 @@ tsh: tsh.c
 	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c -L$(OBJS) -lsng
 
 clean: 
-	rm tshlib
+	rm tshlib tsh
