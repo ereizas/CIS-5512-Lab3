@@ -54,7 +54,7 @@ int initCommon(u_short port)
 void start()
 {
    static void (*op_func[])() = {OpPut, OpGet, OpGet} ;
-   pid_t shell_pid;
+   pid_t shell_pid = -1;
    static void (*shell_op_func[])(pid_t*) = {OpShell};
 
    while (TRUE)
@@ -218,9 +218,45 @@ void OpGet()
 /*
 Starts the shell in the background
 @param shell_pid : pointer to pid_t var that tracks the current shell's pid
+@return 0 on success, 1 if a shell process could not be forked, 2 or 3 if opening the file for input/output (respectively) redirection fails, or 4 if executing the shell program fails
 */
-void start_shell(pid_t *shell_pid){
-   return;
+short int start_shell(pid_t *shell_pid){
+   pid_t fork_ret = 0; int wait_status = 0;
+   if((fork_ret=fork())==-1)
+   {
+      perror("fork");
+      puts("Shell could not start");
+      return 1;
+   }
+   if(fork_ret==0){
+      int input_fd;
+      if((input_fd= open("input.txt", O_RDONLY|O_CREAT, 0644))<0){
+         perror("open");
+         return 2;
+      }
+      int output_fd;
+      if((output_fd= open("output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644))<0){
+         perror("open");
+         return 3;
+      }
+      dup2(input_fd, STDIN_FILENO);
+      dup2(output_fd, STDOUT_FILENO);
+      close(input_fd);
+      close(output_fd);
+      //TODO: Redirect stdin and stdout of shell to two different files
+      if(execlp("../myShell/shell","../myShell/shell",NULL)==-1)
+      {
+         perror("execlp");
+         return 4;
+      }
+   }
+   else{
+      *shell_pid=fork_ret;
+      if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
+      {
+         perror("waitpid");
+      }
+   }
 }
 
 /*
@@ -231,10 +267,12 @@ void OpShell(pid_t *shell_pid){
    char cmd[CMD_MAX];
    if (!readn(newsock, cmd, sizeof(cmd)))
       return ;
+   char shell_out[CMD_MAX];
    if(*shell_pid==-1){
-      start_shell(shell_pid);
+      if(start_shell(shell_pid)){
+         strcpy(shell_out,"Shell failed to start");
+      }
    }
-   char shell_out[CMD_MAX] = "Test";
    writen(newsock, shell_out, sizeof(shell_out)) ;
 }
 

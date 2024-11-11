@@ -75,7 +75,7 @@ int total_fetched = 0;
 void OpPut(/*void*/) ;
 void OpGet(/*void*/) ;
 void OpShell(pid_t *shell_pid) ;
-void start_shell(pid_t *shell_pid) ;
+short int start_shell(pid_t *shell_pid) ;
 void OpExit(/*void*/) ;
 
 
