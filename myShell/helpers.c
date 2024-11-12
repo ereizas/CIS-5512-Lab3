@@ -69,3 +69,26 @@ int find_special (char*args[], char * special){
 	return -1;
 }
 
+/*
+Parses the command line given for the shell to see if the non-interactive option was given
+@param argc : number of commandline arguments
+@param argv : commandline arguments
+@interactive : pointer to boolean indicating whether the shell is set to run interactively
+*/
+void parse_opts(int argc, char *const argv[],_Bool *interactive){
+  char opt;
+  while((opt=getopt(argc,argv,"c:"))!=-1)
+  {
+    if(opt=='c'){
+      *interactive=0;
+    }
+    else{
+      exit(1);
+    }
+  }
+  if(optind!=argc)
+    {
+        puts("Invalid argument(s) passed.");
+        exit(1);
+    }
+}
