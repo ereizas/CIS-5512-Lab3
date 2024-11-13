@@ -53,19 +53,7 @@ int initCommon(u_short port)
 
 void start()
 {
-   static void (*op_func[])() = {OpPut, OpGet, OpGet} ;
-   pid_t shell_pid = -1;
-   int in_fd;
-   if((in_fd= open("input.txt", O_RDONLY|O_CREAT, 0644))<0){
-      perror("open");
-      return 2;
-   }
-   int out_fd;
-   if((out_fd= open("output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644))<0){
-      perror("open");
-      return 3;
-   }
-   static void (*shell_op_func[])(pid_t*,int,int) = {OpShell};
+   static void (*op_func[])() = {OpPut, OpGet, OpGet, OpShell, OpExit};
    while (TRUE)
     {				/* read operation on TSH port */
       if ((newsock = get_connection(oldsock, NULL)) == -1)
@@ -80,18 +68,10 @@ void start()
 		/* invoke function for operation */
       this_op = ntohs(this_op) ;
 
-      if (this_op >= TSH_OP_MIN && this_op < TSH_SHELL_OP_MIN)
+      if (this_op >= TSH_OP_MIN && this_op < TSH_OP_MAX)
       {
 	      (*op_func[this_op - TSH_OP_MIN])() ;
       }
-      else if(this_op >= TSH_SHELL_OP_MIN && this_op <=TSH_OP_MAX){
-         (*shell_op_func[this_op - TSH_SHELL_OP_MIN])(&shell_pid,in_fd,out_fd);
-      }
-      else if(this_op==OP_EXIT)
-      {
-         OpExit();
-      }
-
        close(newsock) ;
     }
 }
@@ -225,77 +205,41 @@ void OpGet()
 }
 
 /*
-Starts the shell in the background
-@param shell_pid : pointer to pid_t var that tracks the current shell's pid
-@return 0 on success, 1 if a shell process could not be forked, 2 or 3 if opening the file for input/output (respectively) redirection fails, or 4 if executing the shell program fails
+Reads the command from the client and executes the command in the shell, and sends the shell output to the client
 */
-short int start_shell(pid_t *shell_pid){
-   pid_t fork_ret = 0; int wait_status = 0;
-   if((fork_ret=fork())==-1)
-   {
-      perror("fork");
-      puts("Shell could not start");
-      return 1;
-   }
-   if(fork_ret==0){
-      int in_fd;
-      if((in_fd= open("input.txt", O_RDONLY|O_CREAT, 0644))<0){
-         perror("open");
-         return 2;
-      }
-      int out_fd;
-      if((out_fd= open("output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644))<0){
-         perror("open");
-         return 3;
-      }
-      dup2(in_fd, STDIN_FILENO);
-      dup2(out_fd, STDOUT_FILENO);
-      close(in_fd);
-      close(out_fd);
-      //TODO: Redirect stdin and stdout of shell to two different files
-      if(execlp("../myShell/shell","../myShell/shell",NULL)==-1)
-      {
-         perror("execlp");
-         return 4;
-      }
-   }
-   else{
-      *shell_pid=fork_ret;
-      if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
-      {
-         perror("waitpid");
-      }
-   }
-}
-
-/*
-Reads the command from the client, starts the shell if not started, executes the command in the shell, and sends the shell output to the client
-@param shell_pid : pointer to pid for shell
-@param in_fd : file descriptor for the input file of the shell
-@param out_fd : file descriptor for the output file of the shell
-*/
-void OpShell(pid_t *shell_pid, int in_fd, int out_fd){
+void OpShell(){
    char cmd[CMD_MAX];
    if (!readn(newsock, cmd, sizeof(cmd)))
       return ;
    char shell_out[CMD_MAX];
-   short int shell_start = 0;
-   if(*shell_pid==-1){
-      if((shell_start=start_shell(shell_pid))){
-         strcpy(shell_out,"Shell failed to start");
+   pid_t fork_ret;
+   if((fork_ret=fork())==-1)
+   {
+      perror("fork");
+      return;
+   }
+   else if(fork_ret==0)
+   {
+      char shell_cmd[CMD_MAX] = "../myShell/shell -c ";
+      strcpy(shell_cmd,cmd);
+      if(execlp("../myShell/shell",shell_cmd)==-1){
+         perror("execlp");
+         strcpy(shell_out,"Shell could not be executed");
+         writen(newsock, shell_out, sizeof(shell_out));
       }
    }
-   if(!shell_start){
-      if(write(in_fd,cmd,sizeof(cmd))==-1){
-         perror("write");
-         strcpy(shell_out,"Failed to send command to shell");
+   else
+   {
+      if(waitpid(fork_ret,NULL,0)==-1)
+      {
+            perror("waitpid");
       }
-      if(read(out_fd,shell_out,sizeof(shell_out))==-1){
-         perror("read");
-         strcpy(shell_out,"Retrieval of output from shell failed.");
+      while(fgets(shell_out,sizeof(shell_out),stdin)){
       }
+      clearerr(stdin);
+      writen(newsock, shell_out, sizeof(shell_out));
    }
-   writen(newsock, shell_out, sizeof(shell_out)) ;
+   
 }
 
 
