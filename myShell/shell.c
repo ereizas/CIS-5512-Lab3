@@ -6,13 +6,11 @@ This is the main file in which the shell will be ran.
 #include <stdlib.h>
 #include <string.h>
 #include "helpers.h"
-#include "proc_list.h"
 #include "built_ins.h"
 #include "non_built_in_parsing.h"
 #include "operations.h"
 int main(int argc, char *argv[])
 {
-    Proc_List proc_list = create_proc_list();
     _Bool interactive = 1;
     parse_opts(argc, argv, &interactive);
     if(interactive){
@@ -38,13 +36,12 @@ int main(int argc, char *argv[])
             char **shell_args = parse(line," \n",&num_args);
             if(shell_args!=NULL)
             {
-                short int built_in = handle_builtins(shell_args, num_args, &proc_list);
+                short int built_in = handle_builtins(shell_args, num_args);
                 if (!built_in) {
-                    execute_non_built_ins(shell_args, num_args,&proc_list);
+                    execute_non_built_ins(shell_args, num_args);
                 }else if(built_in==2){
                     free(shell_args);
                     free(line);
-                    free(proc_list.pids);
                     exit(0);
                 }
                 free(shell_args);
@@ -55,11 +52,10 @@ int main(int argc, char *argv[])
     else{
         argv+=2;
         if(argv!=NULL){
-            short int built_in = handle_builtins(argv, argc-2, &proc_list);
+            short int built_in = handle_builtins(argv, argc-2);
             if (!built_in) {
-                execute_non_built_ins(argv, argc-2,&proc_list);
+                execute_non_built_ins(argv, argc-2);
             }
         }
     }
-    free(proc_list.pids);
 }

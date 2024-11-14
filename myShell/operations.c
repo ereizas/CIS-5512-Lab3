@@ -16,7 +16,7 @@ This file is meant to provide functions for execution of programs and redirectio
 /*Checks if the first command is a builtin, and executes it if it is one and returns one, otherwise it returns 0
 @param shell_args array of strings that the input line consists of
 @param num_args number of arguments given in the line*/
-int handle_builtins(char **shell_args, int num_args, Proc_List *proc_list) {
+int handle_builtins(char **shell_args, int num_args) {
     if (strcmp(shell_args[0], "exit") == 0) {
         if(shell_exit(num_args)){
             return 2;
@@ -34,18 +34,6 @@ int handle_builtins(char **shell_args, int num_args, Proc_List *proc_list) {
         return 1;
     } else if (strcmp(shell_args[0], "wait") == 0) {
         shell_wait(num_args);
-        return 1;
-    }
-    else if(strcmp(shell_args[0], "killall")==0){
-        killall(num_args,proc_list);
-        return 1;
-    }
-    else if (strcmp(shell_args[0], "kill")==0){
-        shell_kill(num_args, shell_args, proc_list);
-        return 1;
-    }
-    else if(strcmp(shell_args[0], "ps")==0){
-        ps(num_args, proc_list);
         return 1;
     }
     return 0; // Not a built-in
@@ -103,7 +91,7 @@ int redirec_output(char *file, _Bool append)
 @param bckgrnd boolean for whether the process should run in the background
 @param append boolean to indicate if output redirection should append (1) or overwrite/not write (0).
 */
-void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _Bool bckgrnd, _Bool append, Proc_List *proc_list)
+void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _Bool bckgrnd, _Bool append)
 {
     pid_t fork_ret = 0; int wait_status = 0;
     if((fork_ret=fork())==-1)
@@ -144,8 +132,6 @@ void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _
         }
         else
         {
-            proc_list->add(proc_list,fork_ret);
-            printf("[%d] %d\n", proc_list->num_procs, fork_ret);
             if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
             {
                 perror("waitpid");
@@ -292,7 +278,7 @@ void pipe_loop(char **args, int num_pipes, _Bool bckgrnd)
 /*Executes the non-built-in commands by parsing the arguments given for executables and operations
 @param shell_args array of strings that the input line consists of
 @param num_args number of arguments given in the line*/
-void execute_non_built_ins(char **shell_args, int num_args, Proc_List *proc_list){
+void execute_non_built_ins(char **shell_args, int num_args){
     if(!strcmp(shell_args[0],"|")||!strcmp(shell_args[0],"<")||!strcmp(shell_args[0],">")||!strcmp(shell_args[0],">>")||!strcmp(shell_args[num_args-1],"|")||!strcmp(shell_args[num_args-1],"<")||!strcmp(shell_args[num_args-1],">")||!strcmp(shell_args[num_args-1],">>"))
     {
         puts("Invalid syntax.");
@@ -336,7 +322,7 @@ void execute_non_built_ins(char **shell_args, int num_args, Proc_List *proc_list
                     {
                         output_file=*(shell_args+find_special(shell_args,">")+1);                        
                     }
-                    execute(input_file,output_file,exec_name,cmd, bckgrnd, 0, proc_list);
+                    execute(input_file,output_file,exec_name,cmd, bckgrnd, 0);
                 }
                 else
                 {
@@ -359,7 +345,7 @@ void execute_non_built_ins(char **shell_args, int num_args, Proc_List *proc_list
                     }
 
                     printf("%s %d\n",output_file, append);
-                    execute(input_file,output_file,exec_name, cmd, bckgrnd, append, proc_list);
+                    execute(input_file,output_file,exec_name, cmd, bckgrnd, append);
                 }
                 else
                 {
@@ -373,7 +359,7 @@ void execute_non_built_ins(char **shell_args, int num_args, Proc_List *proc_list
         }
         else
         {
-            execute(input_file,output_file,exec_name,cmd, bckgrnd, 0, proc_list);
+            execute(input_file,output_file,exec_name,cmd, bckgrnd, 0);
         }
         //moves pointer back to beginning to free it
         shell_args=temp_start;
