@@ -211,6 +211,7 @@ void OpShell(){
    char cmd[CMD_MAX];
    if (!readn(newsock, cmd, sizeof(cmd)))
       return ;
+   printf("Command: %s\n",cmd);
    char shell_out[CMD_MAX];
    pid_t fork_ret;
    if((fork_ret=fork())==-1)
@@ -220,9 +221,7 @@ void OpShell(){
    }
    else if(fork_ret==0)
    {
-      char shell_cmd[CMD_MAX] = "../myShell/shell -c ";
-      strcpy(shell_cmd,cmd);
-      if(execlp("../myShell/shell",shell_cmd)==-1){
+      if(execlp("../myShell/shell","./shell","-c",cmd,NULL)==-1){
          perror("execlp");
          strcpy(shell_out,"Shell could not be executed");
          writen(newsock, shell_out, sizeof(shell_out));
@@ -232,14 +231,13 @@ void OpShell(){
    {
       if(waitpid(fork_ret,NULL,0)==-1)
       {
-            perror("waitpid");
+         perror("waitpid");
       }
-      while(fgets(shell_out,sizeof(shell_out),stdin)){
+      while(fgets(shell_out,sizeof(shell_out),stdout)){
       }
-      clearerr(stdin);
+      clearerr(stdout);
       writen(newsock, shell_out, sizeof(shell_out));
    }
-   
 }
 
 
