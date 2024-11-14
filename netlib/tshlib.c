@@ -239,6 +239,7 @@ void OpShell()
    }
    printf("\n\nFrom TSH :\n");
    printf("%s",shell_out);
+   sleep(4);
    getchar();
 }
 
