@@ -52,9 +52,11 @@ int main(int argc, char *argv[])
     else{
         argv+=2;
         if(argv!=NULL){
-            short int built_in = handle_builtins(argv, argc-2);
+            int num_args = 0;
+            char **shell_args = parse(*argv," \n",&num_args);
+            short int built_in = handle_builtins(shell_args, num_args);
             if (!built_in) {
-                execute_non_built_ins(argv, argc-2);
+                execute_non_built_ins(shell_args, num_args);
             }
         }
     }
