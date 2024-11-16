@@ -4,13 +4,13 @@ OBJS = ../obj
 EXTRA = 
 cc = gcc
 
-all: tshlib tsh
+all: tshtest tsh
 
-tshlib: tshlib.c
-	$(cc) $(EXTRA) $(INCL) -g -o tshlib tshlib.c -L$(OBJS) -lsng
+tshtest: tshtest.c
+	$(cc) $(EXTRA) $(INCL) -g -o tshtest tshtest.c -L$(OBJS) -lsng
 
 tsh: tsh.c
 	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c -L$(OBJS) -lsng
 
 clean: 
-	rm tshlib tsh
+	rm tshtest tsh
