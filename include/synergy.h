@@ -569,6 +569,16 @@ typedef struct {
 } tsh_get_it;
 
 typedef struct {
+   int num_args;
+   char cmd[CMD_MAX];
+} tsh_shell_it;
+
+typedef struct {
+   int status;
+   char description[NAME_LEN]
+} tsh_shell_ot;
+
+typedef struct {
   sng_int32 host;
   int proc_id;
 } tsh_retrieve_it;
