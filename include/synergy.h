@@ -534,17 +534,6 @@ typedef struct {
 #define TSH_OP_GET                402
 #define TSH_OP_READ               403
 #define TSH_OP_EXIT               404
-#define TSH_OP_RETRIEVE           405
-#define TSH_OP_TIDINFO            406   /* get tid host & cid_port */
-#define TSH_OP_SOT                407   /* marks start of scater */
-#define TSH_OP_EOT                408   /* marks end of scater */
-#define TSH_ADVANCED_OP_ACTIVATE  409   /* delete terminator by worker ID */
-#define TSH_ADVANCED_OP_CLEANUP_QUEUE 410 /* clean up Queue by worker ID */
-#define TSH_ADVANCED_OP_CLEANUP_SPACE 411 /* clean up Space by worker ID */
-#define TSH_ADVANCED_OP_SEND_DATA 412   /* compiler-generated master/workers */
-#define TSH_ADVANCED_OP_READ_DATA 413   /* compiler-generated master/workers */
-#define TSH_ADVANCED_OP_SET_TOKEN 414   /* compiler-generated master/workers */
-#define TSH_ADVANCED_OP_GET_TOKEN 415   /* compiler-generated master/workers */
 #define TSH_RMALL 		  416   /* remove all existing tuples */ 
 
 #define TSH_ER_NOERROR            400
