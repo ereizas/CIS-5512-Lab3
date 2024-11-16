@@ -219,26 +219,37 @@ Prompts user for shell command, sends the command, and prints the output of the 
 */
 void OpShell()
 {
-   char cmd[CMD_MAX];
-   printf("TSH_OP_SHELL");
-   printf("\n-----------\n") ;
-   printf("Enter the shell command: ");
-   scanf("%s",cmd);
-   if (!writen(tshsock, cmd, sizeof(cmd)))
+   printf("%s", "<My_Shell>:");
+   printf("%c",'$');
+   char *line; size_t len;
+   if((line=malloc(CMD_MAX))==NULL)
+   {
+         perror("malloc");
+         continue;
+   }
+   if(getline(&line,&len,stdin)==-1)
+   {
+         perror("getline");
+         free(line);
+         continue;
+   }
+   tsh_shell_it out;
+   out.cmd=parse(line," \n",&out.num_args);
+   if (!writen(tshsock, &(*char)out, sizeof(out)))
    {
       perror("\nOpShell::writen\n") ;
       getchar() ;
       return ;
    }
-   char shell_out[CMD_MAX];
-   if (!readn(tshsock, shell_out, sizeof(shell_out)))
+   tsh_shell_ot in;
+   if (!readn(tshsock, &(*char)in, sizeof(in)))
    {
       perror("\nOpShell::readn\n") ;
       getchar() ;
       return ;
    }
    printf("\n\nFrom TSH :\n");
-   printf("%s",shell_out);
+   printf("%s",in.description);
    sleep(4);
    getchar();
 }
@@ -252,7 +263,7 @@ void OpKillAll(){
 }
 
 void OpPS(){
-   
+
 }
 
 int connectTsh(u_short port)
