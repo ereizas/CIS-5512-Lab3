@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
 	static void (*op_func[])() = 
 	{
-		OpPut, OpGet, OpGet, OpShell, OpExit
+		OpPut, OpGet, OpGet, OpShell, OpKill, OpKillAll, OpPS, OpExit
    };
 	u_short this_op ;
    
@@ -243,6 +243,17 @@ void OpShell()
    getchar();
 }
 
+void OpKill(){
+
+}
+
+void OpKillAll(){
+
+}
+
+void OpPS(){
+   
+}
 
 int connectTsh(u_short port)
 {

@@ -12,6 +12,9 @@ void OpGet(/*void*/) ;
 void OpExit(/*void*/) ;
 void OpRetrieve(/*void*/) ;
 void OpShell() ;
+void OpKill() ;
+void OpKillAll() ;
+void OpPS() ;
 
 int tshsock ;
 
