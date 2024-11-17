@@ -226,7 +226,7 @@ void OpShell()
    char c;
    while((c=getchar())!='\n'&&c!=EOF);
    printf("%s", "\n<My_Shell>:");
-   char *line; size_t len;
+   char *line; size_t len=0;
    if((line=malloc(CMD_MAX))==NULL)
    {
       perror("malloc");
@@ -241,6 +241,7 @@ void OpShell()
    printf("\n\nTo TSH :\n") ;
    printf("\nCommand: %s",line);
    tsh_shell_it out;
+   out.num_args = 0; // Initialize num_args to 0
    out.cmd=parse(line," \n",&out.num_args);
    printf("Number of arguments: %d",out.num_args);
    out.num_args = htonl(out.num_args);
