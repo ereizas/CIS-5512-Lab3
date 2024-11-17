@@ -570,12 +570,12 @@ typedef struct {
 
 typedef struct {
    int num_args;
-   char *cmd[PATH_LEN];
+   char **cmd;
 } tsh_shell_it;
 
 typedef struct {
    int status;
-   char description[NAME_LEN]
+   char description[NAME_LEN];
 } tsh_shell_ot;
 
 typedef struct {
