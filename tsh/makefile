@@ -1,27 +1,28 @@
 INCL = -I../include
-FLAGS = -c -O3 
+FLAGS = -c -O3
 OBJS = ../obj
 EXTRA = 
 cc = gcc
 
-all: tshtest tsh shell
+all: tshtest tsh
 
-tshtest: tshtest.c
-	$(cc) $(EXTRA) $(INCL) -g -o tshtest tshtest.c -L$(OBJS) -lsng
+tshtest: tshtest.c helpers.o built_ins.o non_built_in_parsing.o
+	$(cc) $(EXTRA) $(INCL) -g -o tshtest tshtest.c helpers.o built_ins.o non_built_in_parsing.o -L$(OBJS) -lsng
 
-tsh: tsh.c
-	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c -L$(OBJS) -lsng
+tsh: tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o
+	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o -L$(OBJS) -lsng
 
-shell: helpers.o built_ins.o non_built_in_parsing.o operations.o
-	gcc -o shell shell.c helpers.o built_ins.o non_built_in_parsing.o operations.o -Wall -Werror
-helpers.o: helpers.c
-	gcc -c helpers.c
-built_ins.o: built_ins.c
-	gcc -c built_ins.c
-non_built_in_parsing.o: non_built_in_parsing.c
-	gcc -c non_built_in_parsing.c
 operations.o: operations.c
-	gcc -c operations.c
+	$(cc) $(FLAGS) $(INCL) -o operations.o operations.c
 
-clean: 
-	rm tshtest tsh *.o shell
+helpers.o: helpers.c
+	$(cc) $(FLAGS) $(INCL) -o helpers.o helpers.c
+
+built_ins.o: built_ins.c
+	$(cc) $(FLAGS) $(INCL) -o built_ins.o built_ins.c
+
+non_built_in_parsing.o: non_built_in_parsing.c
+	$(cc) $(FLAGS) $(INCL) -o non_built_in_parsing.o non_built_in_parsing.c
+
+clean:
+	rm tshtest tsh *.o
