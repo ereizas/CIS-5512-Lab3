@@ -5,7 +5,7 @@
 /*                  February '13, updated by Justin Y. Shi                 */
 /*.........................................................................*/
 
-#include "tshlib.h"
+#include "tshtest.h"
 int status;
 
 int main(int argc, char **argv)
@@ -224,30 +224,31 @@ void OpShell()
    char *line; size_t len;
    if((line=malloc(CMD_MAX))==NULL)
    {
-         perror("malloc");
-         continue;
+      perror("malloc");
+      return;
    }
    if(getline(&line,&len,stdin)==-1)
    {
-         perror("getline");
-         free(line);
-         continue;
+      perror("getline");
+      free(line);
+      return;
    }
    tsh_shell_it out;
    out.cmd=parse(line," \n",&out.num_args);
-   if (!writen(tshsock, &(*char)out, sizeof(out)))
+   if (!writen(tshsock, (char*)&out, sizeof(out)))
    {
       perror("\nOpShell::writen\n") ;
       getchar() ;
       return ;
    }
    tsh_shell_ot in;
-   if (!readn(tshsock, &(*char)in, sizeof(in)))
+   if (!readn(tshsock, (char*)&in, sizeof(in)))
    {
       perror("\nOpShell::readn\n") ;
       getchar() ;
       return ;
    }
+   free(line);
    printf("\n\nFrom TSH :\n");
    printf("%s",in.description);
    sleep(4);
