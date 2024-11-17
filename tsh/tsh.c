@@ -3,6 +3,7 @@
 /*.........................................................................*/
 
 #include "tsh.h"
+#include "operations.h"
 #include <regex.h>
 /*---------------------------------------------------------------------------
   Prototype   : int initCommon(port)
@@ -208,36 +209,46 @@ void OpGet()
 Reads the command from the client and executes the command in the shell, and sends the shell output to the client
 */
 void OpShell(){
-   char cmd[CMD_MAX];
-   if (!readn(newsock, cmd, sizeof(cmd)))
+   tsh_shell_it in;
+   if (!readn(newsock, (char*)&in, sizeof(in)))
       return ;
-   printf("Command: %s\n",cmd);
-   char shell_out[CMD_MAX];
-   pid_t fork_ret;
-   if((fork_ret=fork())==-1)
-   {
-      perror("fork");
-      return;
-   }
-   else if(fork_ret==0)
-   {
-      if(execlp("../myShell/shell","./shell","-c",cmd,NULL)==-1){
-         perror("execlp");
-         strcpy(shell_out,"Shell could not be executed");
-         writen(newsock, shell_out, sizeof(shell_out));
-      }
-   }
-   else
-   {
-      if(waitpid(fork_ret,NULL,0)==-1)
+   tsh_shell_ot out;
+   if(in.cmd!=NULL){
+      pid_t fork_ret;
+      if((fork_ret=fork())==-1)
       {
-         perror("waitpid");
+         perror("fork");
+         strcpy(out.description,"Failed to fork shell process");
       }
-      while(fgets(shell_out,sizeof(shell_out),stdout)){
+      else if(fork_ret==0)
+      {
+         short int built_in = handle_builtins(in.cmd, in.num_args);
+         if (!built_in) {
+            execute_non_built_ins(in.cmd, in.num_args);
+         }else if(built_in==2){
+            free(in.cmd);
+            exit(0);
+         }
+         free(in.cmd);
       }
-      clearerr(stdout);
-      writen(newsock, shell_out, sizeof(shell_out));
+      else
+      {
+         int wait_status;
+         if(waitpid(fork_ret,&wait_status,0)==-1)
+         {
+            perror("waitpid");
+            strcpy(out.description,"Shell could not coordinate the end of the command.");
+         }
+         //check status of forked process
+         //if stat is good, parse output
+      }
    }
+   else{
+      strcpy(out.description,"No command given");
+   }
+   strcpy(out.description,"Test");
+   writen(newsock, (char*)& out, sizeof(out));
+   
 }
 
 
