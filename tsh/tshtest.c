@@ -6,6 +6,7 @@
 /*.........................................................................*/
 
 #include "tshtest.h"
+#include "helpers.h"
 int status;
 
 int main(int argc, char **argv)
@@ -219,8 +220,12 @@ Prompts user for shell command, sends the command, and prints the output of the 
 */
 void OpShell()
 {
-   printf("%s", "<My_Shell>:");
-   printf("%c",'$');
+   status=system("clear");
+   printf("TSH_OP_SHELL") ;
+   printf("\n----------\n") ;
+   char c;
+   while((c=getchar())!='\n'&&c!=EOF);
+   printf("%s", "\n<My_Shell>:");
    char *line; size_t len;
    if((line=malloc(CMD_MAX))==NULL)
    {
@@ -233,8 +238,12 @@ void OpShell()
       free(line);
       return;
    }
+   printf("\n\nTo TSH :\n") ;
+   printf("\nCommand: %s",line);
    tsh_shell_it out;
    out.cmd=parse(line," \n",&out.num_args);
+   printf("Number of arguments: %d",out.num_args);
+   out.num_args = htonl(out.num_args);
    if (!writen(tshsock, (char*)&out, sizeof(out)))
    {
       perror("\nOpShell::writen\n") ;
