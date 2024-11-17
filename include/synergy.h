@@ -570,7 +570,7 @@ typedef struct {
 
 typedef struct {
    int num_args;
-   char cmd[CMD_MAX];
+   char *cmd[PATH_LEN];
 } tsh_shell_it;
 
 typedef struct {
