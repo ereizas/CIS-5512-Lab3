@@ -533,7 +533,7 @@ typedef struct {
 #define TSH_OP_PUT                401
 #define TSH_OP_GET                402
 #define TSH_OP_READ               403
-#define TSH_OP_EXIT               404
+#define TSH_OP_EXIT               409
 #define TSH_RMALL 		  416   /* remove all existing tuples */ 
 
 #define TSH_ER_NOERROR            400
@@ -567,11 +567,6 @@ typedef struct {
   int proc_id;
   sng_int16 cidport;  /* local cid port for tid info */
 } tsh_get_it;
-
-typedef struct {
-   int num_args;
-   char **cmd;
-} tsh_shell_it;
 
 typedef struct {
    int status;

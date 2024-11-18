@@ -3,6 +3,7 @@
 /*.........................................................................*/
 
 #include "tsh.h"
+#include "helpers.h"
 #include "operations.h"
 #include <regex.h>
 /*---------------------------------------------------------------------------
@@ -209,11 +210,22 @@ void OpGet()
 Reads the command from the client and executes the command in the shell, and sends the shell output to the client
 */
 void OpShell(){
-   tsh_shell_it in;
-   if (!readn(newsock, (char*)&in, sizeof(in)))
-      return ;
    tsh_shell_ot out;
-   if(in.cmd!=NULL){
+   char *cmd;
+   if((cmd=malloc(CMD_MAX))==NULL){
+      perror("malloc");
+      strcpy(out.description,"Could not allocate space for command.");
+   }
+   if (!readn(newsock, cmd, sizeof(CMD_MAX)))
+      return ;
+   int num_args = 0;
+   char **shell_args = parse(cmd," \n",&num_args);
+   printf("Num args: %d\n",num_args);
+   for(int i = 0; i<num_args; i++){
+      printf("%s ",shell_args[i]);
+   }
+   puts("");
+   if(shell_args!=NULL){
       pid_t fork_ret;
       if((fork_ret=fork())==-1)
       {
@@ -222,22 +234,27 @@ void OpShell(){
       }
       else if(fork_ret==0)
       {
-         short int built_in = handle_builtins(in.cmd, in.num_args);
+         short int built_in = handle_builtins(shell_args, num_args);
          if (!built_in) {
-            execute_non_built_ins(in.cmd, in.num_args);
+            execute_non_built_ins(shell_args, num_args);
          }else if(built_in==2){
-            free(in.cmd);
+            free(shell_args);
             exit(0);
          }
-         free(in.cmd);
+         free(shell_args);
       }
       else
       {
-         int wait_status;
-         if(waitpid(fork_ret,&wait_status,0)==-1)
+         if(waitpid(fork_ret,&out.status,0)==-1)
          {
             perror("waitpid");
             strcpy(out.description,"Shell could not coordinate the end of the command.");
+         }
+         if(WIFEXITED(out.status)){
+            strcpy(out.description,"Command succeeded.");
+         }
+         else{
+            strcpy(out.description,"Command failed.");
          }
          //check status of forked process
          //if stat is good, parse output
@@ -246,7 +263,6 @@ void OpShell(){
    else{
       strcpy(out.description,"No command given");
    }
-   strcpy(out.description,"Test");
    writen(newsock, (char*)& out, sizeof(out));
    
 }

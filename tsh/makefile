@@ -6,8 +6,8 @@ cc = gcc
 
 all: tshtest tsh
 
-tshtest: tshtest.c helpers.o built_ins.o non_built_in_parsing.o
-	$(cc) $(EXTRA) $(INCL) -g -o tshtest tshtest.c helpers.o built_ins.o non_built_in_parsing.o -L$(OBJS) -lsng
+tshtest: tshtest.c 
+	$(cc) $(EXTRA) $(INCL) -g -o tshtest tshtest.c -L$(OBJS) -lsng
 
 tsh: tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o
 	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o -L$(OBJS) -lsng

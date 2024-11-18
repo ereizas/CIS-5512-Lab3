@@ -6,7 +6,6 @@
 /*.........................................................................*/
 
 #include "tshtest.h"
-#include "helpers.h"
 int status;
 
 int main(int argc, char **argv)
@@ -220,32 +219,18 @@ Prompts user for shell command, sends the command, and prints the output of the 
 */
 void OpShell()
 {
+   //TODO: try sending line to tsh and having it parse there
    status=system("clear");
    printf("TSH_OP_SHELL") ;
    printf("\n----------\n") ;
    char c;
    while((c=getchar())!='\n'&&c!=EOF);
    printf("%s", "\n<My_Shell>:");
-   char *line; size_t len=0;
-   if((line=malloc(CMD_MAX))==NULL)
-   {
-      perror("malloc");
-      return;
-   }
-   if(getline(&line,&len,stdin)==-1)
-   {
-      perror("getline");
-      free(line);
-      return;
-   }
+   char cmd[CMD_MAX];
+   fgets(cmd,CMD_MAX,stdin);
    printf("\n\nTo TSH :\n") ;
-   printf("\nCommand: %s",line);
-   tsh_shell_it out;
-   out.num_args = 0; // Initialize num_args to 0
-   out.cmd=parse(line," \n",&out.num_args);
-   printf("Number of arguments: %d",out.num_args);
-   out.num_args = htonl(out.num_args);
-   if (!writen(tshsock, (char*)&out, sizeof(out)))
+   printf("\nCommand: %s",cmd);
+   if (!writen(tshsock, cmd, sizeof(cmd)))
    {
       perror("\nOpShell::writen\n") ;
       getchar() ;
@@ -258,7 +243,6 @@ void OpShell()
       getchar() ;
       return ;
    }
-   free(line);
    printf("\n\nFrom TSH :\n");
    printf("%s",in.description);
    sleep(4);
