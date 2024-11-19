@@ -570,7 +570,7 @@ typedef struct {
 
 typedef struct {
    int status;
-   char description[NAME_LEN];
+   char description[CMD_MAX];
 } tsh_shell_ot;
 
 typedef struct {
