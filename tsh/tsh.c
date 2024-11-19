@@ -215,9 +215,13 @@ void OpShell(){
    if((cmd=malloc(CMD_MAX))==NULL){
       perror("malloc");
       strcpy(out.description,"Could not allocate space for command.");
+      writen(newsock, (char*)&out, sizeof(out));
+      return;
    }
-   if (!readn(newsock, cmd, CMD_MAX))
+   if (!readn(newsock, cmd, CMD_MAX)){
+      free(cmd);
       return ;
+   }
    int num_args = 0;
    char **shell_args = parse(cmd," \n",&num_args);
    if(shell_args!=NULL){
@@ -226,6 +230,7 @@ void OpShell(){
       {
          perror("fork");
          strcpy(out.description,"Failed to fork shell process");
+         writen(newsock, (char*)&out, sizeof(out));
       }
       else if(fork_ret==0)
       {
@@ -237,6 +242,7 @@ void OpShell(){
             exit(0);
          }
          free(shell_args);
+         exit(0);
       }
       else
       {
