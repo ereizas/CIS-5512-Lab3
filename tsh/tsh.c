@@ -55,7 +55,7 @@ int initCommon(u_short port)
 
 void start()
 {
-   static void (*op_func[])() = {OpPut, OpGet, OpGet, OpShell, OpExit};
+   static void (*op_func[])() = {OpPut, OpGet, OpGet, OpShell, OpKill, OpKillAll, OpPS, OpExit};
    while (TRUE)
     {				/* read operation on TSH port */
       if ((newsock = get_connection(oldsock, NULL)) == -1)
@@ -289,7 +289,18 @@ void OpShell(){
    writen(newsock, (char*)& out, sizeof(out));
    free(shell_args);
    free(cmd);
-   
+}
+
+void OpKill(){
+
+}
+
+void OpKillAll(){
+
+}
+
+void OpPS(){
+
 }
 
 
