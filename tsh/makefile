@@ -9,8 +9,8 @@ all: tshtest tsh
 tshtest: tshtest.c 
 	$(cc) $(EXTRA) $(INCL) -g -o tshtest tshtest.c -L$(OBJS) -lsng
 
-tsh: tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o
-	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o -L$(OBJS) -lsng
+tsh: tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o process_node.o
+	$(cc) $(EXTRA) $(INCL) -g -o tsh tsh.c operations.o built_ins.o non_built_in_parsing.o helpers.o process_node.o -L$(OBJS) -lsng
 
 operations.o: operations.c
 	$(cc) $(FLAGS) $(INCL) -o operations.o operations.c
@@ -23,6 +23,9 @@ built_ins.o: built_ins.c
 
 non_built_in_parsing.o: non_built_in_parsing.c
 	$(cc) $(FLAGS) $(INCL) -o non_built_in_parsing.o non_built_in_parsing.c
+
+process_node.o: process_node.cc
+	$(cc) $(FLAGS) $(INCL) -o process_node.c
 
 clean:
 	rm tshtest tsh *.o
