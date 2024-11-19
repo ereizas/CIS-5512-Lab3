@@ -216,15 +216,10 @@ void OpShell(){
       perror("malloc");
       strcpy(out.description,"Could not allocate space for command.");
    }
-   if (!readn(newsock, cmd, sizeof(CMD_MAX)))
+   if (!readn(newsock, cmd, CMD_MAX))
       return ;
    int num_args = 0;
    char **shell_args = parse(cmd," \n",&num_args);
-   printf("Num args: %d\n",num_args);
-   for(int i = 0; i<num_args; i++){
-      printf("%s ",shell_args[i]);
-   }
-   puts("");
    if(shell_args!=NULL){
       pid_t fork_ret;
       if((fork_ret=fork())==-1)
