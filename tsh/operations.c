@@ -132,6 +132,7 @@ void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _
         }
         else
         {
+            printf("PID: %d ", fork_ret);
             if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
             {
                 perror("waitpid");
