@@ -7,4 +7,4 @@ typedef struct ProcessNode{
 } ProcessNode;
 
 ProcessNode* add_bg_proc(ProcessNode *node, pid_t pid, const char *cmd);
-void rm_bg_proc(ProcessNode *node, pid_t pid);
+ProcessNode* rm_bg_proc(ProcessNode *node, pid_t pid);
