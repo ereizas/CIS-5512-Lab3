@@ -1,5 +1,8 @@
 #include <stdlib.h>
-#include "synergy.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <string.h>
+#define CMD_MAX 4096
 typedef struct ProcessNode{
    pid_t pid;
    char cmd[CMD_MAX];
