@@ -24,8 +24,8 @@ built_ins.o: built_ins.c
 non_built_in_parsing.o: non_built_in_parsing.c
 	$(cc) $(FLAGS) $(INCL) -o non_built_in_parsing.o non_built_in_parsing.c
 
-process_node.o: process_node.cc
-	$(cc) $(FLAGS) $(INCL) -o process_node.c
+process_node.o: process_node.c
+	$(cc) $(FLAGS) $(INCL) process_node.c
 
 clean:
 	rm tshtest tsh *.o
