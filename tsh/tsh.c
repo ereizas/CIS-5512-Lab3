@@ -6,6 +6,8 @@
 #include "helpers.h"
 #include "operations.h"
 #include <regex.h>
+#include "process_node.h"
+ProcessNode *bg_procs = NULL;
 /*---------------------------------------------------------------------------
   Prototype   : int initCommon(port)
   Parameters  : -
@@ -226,6 +228,8 @@ void OpShell(){
    char **shell_args = parse(cmd," \n",&num_args);
    if(shell_args!=NULL){
       int pipefd[2];
+      int original_stdout = dup(STDOUT_FILENO);
+      int original_stderr = dup(STDERR_FILENO);
       if (pipe(pipefd) == -1) {
          perror("pipe");
          strcpy(out.description, "Failed to create pipe.");
@@ -234,54 +238,31 @@ void OpShell(){
          free(cmd);
          return;
       }
-      pid_t fork_ret;
-      if((fork_ret=fork())==-1)
-      {
-         perror("fork");
-         strcpy(out.description,"Failed to fork shell process");
-         writen(newsock, (char*)&out, sizeof(out));
+      dup2(pipefd[1], STDOUT_FILENO); 
+      dup2(pipefd[1], STDERR_FILENO);
+      close(pipefd[1]);
+      short int built_in = handle_builtins(shell_args, num_args);
+      if (!built_in) {
+         execute_non_built_ins(shell_args, num_args);
       }
-      else if(fork_ret==0)
-      {
-         close(pipefd[0]);
-         dup2(pipefd[1], STDOUT_FILENO); 
-         dup2(pipefd[1], STDERR_FILENO);
-         close(pipefd[1]);
-         short int built_in = handle_builtins(shell_args, num_args);
-         if (!built_in) {
-            execute_non_built_ins(shell_args, num_args);
-         }else if(built_in==2){
-            free(shell_args);
-            exit(0);
-         }
-         free(shell_args);
-         exit(0);
+      fflush(stdout);
+      fflush(stderr);
+      dup2(original_stdout, STDOUT_FILENO);
+      dup2(original_stderr, STDERR_FILENO);
+      close(original_stdout);
+      close(original_stderr);
+      //read output
+      char buffer[PATH_LEN];
+      ssize_t bytesRead;
+      char output[CMD_MAX] = {0};
+      close(STDOUT_FILENO); 
+      close(STDERR_FILENO);
+      while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) {
+         buffer[bytesRead] = '\0';
+         strncat(output, buffer, CMD_MAX - strlen(output) - 1);
       }
-      else
-      {
-         close(pipefd[1]);
-         char buffer[PATH_LEN];
-         ssize_t bytesRead;
-         char output[CMD_MAX] = {0};
-         while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) {
-            buffer[bytesRead] = '\0';
-            strncat(output, buffer, CMD_MAX - strlen(output) - 1);
-         }
-         close(pipefd[0]);
-         if(waitpid(fork_ret,&out.status,0)==-1)
-         {
-            perror("waitpid");
-            strcpy(out.description,"Shell could not coordinate the end of the command.");
-         }
-         if(WIFEXITED(out.status)){
-            strcpy(out.description,output);
-         }
-         else{
-            strcpy(out.description,"Command failed.");
-         }
-         //check status of forked process
-         //if stat is good, parse output
-      }
+      close(pipefd[0]);
+      strncpy(out.description, output, sizeof(out.description) - 1);
    }
    else{
       strcpy(out.description,"No command given");
