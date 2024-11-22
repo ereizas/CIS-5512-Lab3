@@ -132,7 +132,7 @@ void execute(char *input_file, char *output_file, char *exec_name, char **cmd, _
         }
         else
         {
-            printf("PID: %d ", fork_ret);
+            printf("PID: %d", fork_ret);
             if(waitpid(fork_ret,&wait_status,WNOHANG)==-1)
             {
                 perror("waitpid");
@@ -262,6 +262,7 @@ void pipe_loop(char **args, int num_pipes, _Bool bckgrnd)
             }
             else
             {
+                printf("PID: %d", ret);
                 if(waitpid(ret,&wait_status,WNOHANG)==-1)
                 {
                     perror("waitpid");
