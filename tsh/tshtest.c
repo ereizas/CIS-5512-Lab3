@@ -305,7 +305,7 @@ u_short drawMenu()
    printf("\n\n\t\t\t 1. Put") ;
    printf("\n\t\t\t 2. Get") ;
    printf("\n\t\t\t 3. Read") ;
-   printf("\n\t\t\t 4. Run shell sommand");
+   printf("\n\t\t\t 4. Run shell command");
    printf("\n\t\t\t 5. Kill single process");
    printf("\n\t\t\t 6. Check status of your background processes");
    printf("\n\t\t\t 7. Kill all your launched processes");
